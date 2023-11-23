@@ -7,7 +7,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="d1f5b" class="com.jpwmii.spaceshooter.components.BackgroundComponent" binding="backgroundComponent" custom-create="true">
+      <component id="61c3d" class="com.jpwmii.spaceshooter.components.GameComponent" binding="gameComponent" custom-create="true">
         <constraints border-constraint="Center"/>
         <properties/>
       </component>
