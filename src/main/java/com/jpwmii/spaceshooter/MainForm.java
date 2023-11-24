@@ -1,6 +1,6 @@
 package com.jpwmii.spaceshooter;
 
-import com.jpwmii.spaceshooter.components.GameComponent;
+import com.jpwmii.spaceshooter.graphics.GameComponent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,10 +18,8 @@ public class MainForm extends JFrame {
     }
 
     private void createUIComponents() {
-        this.mainPanel = new JPanel();
-        this.add(mainPanel);
         gameComponent = new GameComponent();
         gameComponent.setPreferredSize(new Dimension(getWidth(), getHeight()));
-        mainPanel.add(gameComponent);
+        this.add(gameComponent);
     }
 }
