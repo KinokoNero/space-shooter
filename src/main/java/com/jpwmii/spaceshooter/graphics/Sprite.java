@@ -7,22 +7,26 @@ import java.net.URL;
 
 public class Sprite {
     private BufferedImage spriteSheet;
-    private BufferedImage frameImage;
+    private BufferedImage image;
     private int frameIndex = 0;
-    private final int frameCount;
+    private int frameCount = 0;
     private final int frameWidth;
     private final int frameHeight;
-    //private final int animationSpeed;
 
-    public Sprite(String spriteSheetURL, int frameCount, int frameWidth, int frameHeight/*, int animationSpeed*/) {
-        loadSpriteSheet(spriteSheetURL);
-        this.frameCount = frameCount;
-        this.frameWidth = frameWidth;
-        this.frameHeight = frameHeight;
-        //this.animationSpeed = animationSpeed;
+    public Sprite(String spriteFileURL) { //static sprite
+        loadSpriteImage(spriteFileURL);
+        this.frameWidth = this.spriteSheet.getWidth();
+        this.frameHeight = this.spriteSheet.getHeight();
     }
 
-    private void loadSpriteSheet(String spriteSheetURL) {
+    public Sprite(String spriteSheetURL, int frameCount) { //animated sprite
+        loadSpriteImage(spriteSheetURL);
+        this.frameCount = frameCount;
+        this.frameWidth = this.spriteSheet.getWidth() / frameCount;
+        this.frameHeight = this.spriteSheet.getHeight();
+    }
+
+    private void loadSpriteImage(String spriteSheetURL) {
         URL imageUrl = getClass().getResource(spriteSheetURL);
         if (imageUrl != null) {
             try {
@@ -37,19 +41,18 @@ public class Sprite {
     }
 
     public void prepareNextFrame() {
+        if(frameCount == 0) //skip if still image
+            return;
+
         if(frameIndex < frameCount - 1)
             frameIndex++;
         else
             frameIndex = 0;
 
-        frameImage = spriteSheet.getSubimage(frameIndex * frameWidth, 0, frameWidth, frameHeight);
+        image = spriteSheet.getSubimage(frameIndex * frameWidth, 0, frameWidth, frameHeight);
     }
 
-    public BufferedImage getFrameImage() {
-        return this.frameImage;
+    public BufferedImage getImage() {
+        return this.image;
     }
-
-    /*public int getAnimationSpeed() {
-        return animationSpeed;
-    }*/
 }

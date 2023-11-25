@@ -1,28 +1,28 @@
 package com.jpwmii.spaceshooter.entities;
 
+import com.jpwmii.spaceshooter.graphics.RelativeBounds;
 import com.jpwmii.spaceshooter.graphics.Sprite;
 
 import javax.swing.*;
+import java.awt.*;
 import java.net.URL;
 
 public class Player extends Entity {
-    //private double horizontalPosition; //expected values between 0 and 1; specifies position from the left side of the screen as %
-    //private final double horizontalPositionMovementStep = 0.01;
     private int lives;
     private int score;
     private ImageIcon lifeIcon;
-    //private Animation playerStarship;
 
-    public Player() {
-        this.horizontalPosition = 0.5;
+    public Player(Dimension dimensions) {
+        super(
+                new RelativeBounds(0.5, 1, 100, 100),
+                new Sprite("/player-spaceship.png", 1)
+        );
         this.lives = 3;
         this.score = 0;
         loadResources();
     }
 
     private void loadResources() {
-        this.entitySprite = new Sprite("/player-spaceship.png", 0, 0, 0); //TODO: modify this line accordingly
-
         URL imageUrl = getClass().getResource("/heart.png");
         if (imageUrl != null) {
             this.lifeIcon = new ImageIcon(imageUrl);
@@ -32,12 +32,12 @@ public class Player extends Entity {
     }
 
     public void moveSpaceship(Direction direction) { //direction value is either (-1) for LEFT or (1) for RIGHT
-        double newPosition = this.horizontalPosition + movementStep * direction.value;
+        double newPosition = this.relativeBounds.getHorizontalPosition() + movementStep * direction.value;
         if(newPosition < 0)
             newPosition = 0;
         if(newPosition > 1)
-            newPosition = 1; //TODO: make sure the spaceship fits the screen from the right side
-        this.horizontalPosition = newPosition;
+            newPosition = 1;
+        this.relativeBounds.setHorizontalPosition(newPosition);
     }
 
     public Sprite getPlayerStarship() {
