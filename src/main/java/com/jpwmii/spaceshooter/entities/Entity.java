@@ -7,7 +7,7 @@ public abstract class Entity {
     protected RelativeBounds relativeBounds;
     protected final double movementStep = 0.01;
     protected Sprite entitySprite;
-    protected enum Direction {
+    public enum Direction {
         LEFT(-1), RIGHT(1), UP(-1), DOWN(1);
 
         final int value;

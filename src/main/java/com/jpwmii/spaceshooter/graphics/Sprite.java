@@ -7,7 +7,7 @@ import java.net.URL;
 
 public class Sprite {
     private BufferedImage spriteSheet;
-    private BufferedImage image;
+    private BufferedImage spriteFrame;
     private int frameIndex = 0;
     private int frameCount = 0;
     private final int frameWidth;
@@ -17,6 +17,7 @@ public class Sprite {
         loadSpriteImage(spriteFileURL);
         this.frameWidth = this.spriteSheet.getWidth();
         this.frameHeight = this.spriteSheet.getHeight();
+        prepareNextFrame();
     }
 
     public Sprite(String spriteSheetURL, int frameCount) { //animated sprite
@@ -24,10 +25,11 @@ public class Sprite {
         this.frameCount = frameCount;
         this.frameWidth = this.spriteSheet.getWidth() / frameCount;
         this.frameHeight = this.spriteSheet.getHeight();
+        prepareNextFrame();
     }
 
-    private void loadSpriteImage(String spriteSheetURL) {
-        URL imageUrl = getClass().getResource(spriteSheetURL);
+    private void loadSpriteImage(String spriteFileURL) {
+        URL imageUrl = getClass().getResource(spriteFileURL);
         if (imageUrl != null) {
             try {
                 this.spriteSheet = ImageIO.read(imageUrl);
@@ -41,18 +43,15 @@ public class Sprite {
     }
 
     public void prepareNextFrame() {
-        if(frameCount == 0) //skip if still image
-            return;
-
         if(frameIndex < frameCount - 1)
             frameIndex++;
         else
             frameIndex = 0;
 
-        image = spriteSheet.getSubimage(frameIndex * frameWidth, 0, frameWidth, frameHeight);
+        spriteFrame = spriteSheet.getSubimage(frameIndex * frameWidth, 0, frameWidth, frameHeight);
     }
 
-    public BufferedImage getImage() {
-        return this.image;
+    public BufferedImage getSpriteFrame() {
+        return this.spriteFrame;
     }
 }

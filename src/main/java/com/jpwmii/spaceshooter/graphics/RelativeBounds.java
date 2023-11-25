@@ -6,12 +6,14 @@ public class RelativeBounds {
     private double verticalPosition;
     private final double width;
     private final double height;
+    private boolean boundsProtected = false; //specifies whether the object can go beyond the window border or not
 
-    public RelativeBounds(double horizontalPosition, double verticalPosition, double width, double height) {
+    public RelativeBounds(double horizontalPosition, double verticalPosition, double width, double height, boolean boundsProtected) {
         this.horizontalPosition = horizontalPosition;
         this.verticalPosition = verticalPosition;
         this.width = width;
         this.height = height;
+        this.boundsProtected = boundsProtected;
         adjustPositionToFitTheWindow();
     }
 
@@ -38,7 +40,8 @@ public class RelativeBounds {
 
     public void setHorizontalPosition(double horizontalPosition) {
         this.horizontalPosition = horizontalPosition;
-        adjustPositionToFitTheWindow();
+        if(this.boundsProtected)
+            adjustPositionToFitTheWindow();
     }
 
     public double getVerticalPosition() {
@@ -47,7 +50,8 @@ public class RelativeBounds {
 
     public void setVerticalPosition(double verticalPosition) {
         this.verticalPosition = verticalPosition;
-        adjustPositionToFitTheWindow();
+        if(this.boundsProtected)
+            adjustPositionToFitTheWindow();
     }
 
     public double getWidth() {
