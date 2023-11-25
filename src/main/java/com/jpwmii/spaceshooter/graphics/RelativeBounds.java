@@ -12,10 +12,24 @@ public class RelativeBounds {
         this.verticalPosition = verticalPosition;
         this.width = width;
         this.height = height;
+        adjustPositionToFitTheWindow();
     }
 
-    private void adjustPositionToFitTheScreen() {
-        //TODO: correct object position when object is near the window border (sprite may extend beyond the limits of the window)
+    private void adjustPositionToFitTheWindow() {
+        final double minRelativeHorizontalPosition = 0;
+        final double maxRelativeHorizontalPosition = 1 - this.width;
+        final double minRelativeVerticalPosition = 0;
+        final double maxRelativeVerticalPosition = 1 - this.height;
+
+        if(this.horizontalPosition < minRelativeHorizontalPosition)
+            this.horizontalPosition = minRelativeHorizontalPosition;
+        else if(this.horizontalPosition > maxRelativeHorizontalPosition)
+            this.horizontalPosition = maxRelativeHorizontalPosition;
+
+        if(this.verticalPosition < minRelativeVerticalPosition)
+            this.verticalPosition = minRelativeVerticalPosition;
+        else if(this.verticalPosition > maxRelativeVerticalPosition)
+            this.verticalPosition = maxRelativeVerticalPosition;
     }
 
     public double getHorizontalPosition() {
@@ -24,7 +38,7 @@ public class RelativeBounds {
 
     public void setHorizontalPosition(double horizontalPosition) {
         this.horizontalPosition = horizontalPosition;
-        adjustPositionToFitTheScreen();
+        adjustPositionToFitTheWindow();
     }
 
     public double getVerticalPosition() {
@@ -33,22 +47,14 @@ public class RelativeBounds {
 
     public void setVerticalPosition(double verticalPosition) {
         this.verticalPosition = verticalPosition;
-        adjustPositionToFitTheScreen();
+        adjustPositionToFitTheWindow();
     }
 
     public double getWidth() {
         return width;
     }
 
-    /*public void setWidth(double width) {
-        this.width = width;
-    }*/
-
     public double getHeight() {
         return height;
     }
-
-    /*public void setHeight(double height) {
-        this.height = height;
-    }*/
 }

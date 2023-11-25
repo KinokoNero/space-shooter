@@ -18,8 +18,12 @@ public class GameComponent extends JComponent implements ActionListener {
     private ArrayList<Projectile> projectileList = new ArrayList<>();
 
     public GameComponent() {
-        this.background = new Sprite("/background-sprite-sheet.png", 40/*, 560, 498*/);
-        this.player = new Player(new Dimension(100, 100));
+        this.background = new Sprite("/background-sprite-sheet.png", 40);
+
+        double playerStarshipSpriteSize = 0.1;
+        this.player = new Player( //creates player starship at the bottom-middle of the window
+                new RelativeBounds(0.5 - playerStarshipSpriteSize / 2, 1, playerStarshipSpriteSize, playerStarshipSpriteSize)
+        );
 
         Timer animationTimer = new Timer(animationSpeed, this);
         animationTimer.start();
@@ -42,25 +46,23 @@ public class GameComponent extends JComponent implements ActionListener {
 
     private void paintEntity(Graphics g, Entity entity) {
         BufferedImage entitySpriteFrame = entity.getEntitySprite().getImage();
-        int windowWidth = getParent().getWidth();
-        int windowHeight = getParent().getHeight();
+        int windowWidth = this.getParent().getWidth();
+        int windowHeight = this.getParent().getHeight();
         RelativeBounds entityRelativeBounds = entity.getRelativeBounds();
 
-        g.drawImage(
-                entitySpriteFrame,
-                (int) (windowWidth * entityRelativeBounds.getHorizontalPosition() - entityRelativeBounds.getWidth() / 2),
-                (int) (windowHeight * entityRelativeBounds.getVerticalPosition() - entityRelativeBounds.getHeight() / 2),
-                (int) entityRelativeBounds.getWidth(),
-                (int) entityRelativeBounds.getHeight(),
-                this
-        );
+        int posX = (int) Math.round(entityRelativeBounds.getHorizontalPosition() * windowWidth);
+        int posY = (int) Math.round(entityRelativeBounds.getVerticalPosition() * windowHeight);
+        int width = (int) Math.round(entityRelativeBounds.getWidth() * windowWidth);
+        int height = (int) Math.round(entityRelativeBounds.getHeight() * windowHeight);
+
+        g.drawImage(entitySpriteFrame, posX, posY, width, height, this);
     }
     //endregion
 
     @Override
     public void actionPerformed(ActionEvent e) { //Every animation timer tick
         this.background.prepareNextFrame();
-        this.player.getPlayerStarship().prepareNextFrame();
+        this.player.getEntitySprite().prepareNextFrame();
         this.repaint();
     }
 

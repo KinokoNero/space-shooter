@@ -4,7 +4,6 @@ import com.jpwmii.spaceshooter.graphics.RelativeBounds;
 import com.jpwmii.spaceshooter.graphics.Sprite;
 
 import javax.swing.*;
-import java.awt.*;
 import java.net.URL;
 
 public class Player extends Entity {
@@ -12,10 +11,10 @@ public class Player extends Entity {
     private int score;
     private ImageIcon lifeIcon;
 
-    public Player(Dimension dimensions) {
+    public Player(RelativeBounds relativeBounds) {
         super(
-                new RelativeBounds(0.5, 1, 100, 100),
-                new Sprite("/player-spaceship.png", 1)
+                relativeBounds,
+                new Sprite("/player-spaceship-sprite-sheet.png", 101)
         );
         this.lives = 3;
         this.score = 0;
@@ -38,9 +37,5 @@ public class Player extends Entity {
         if(newPosition > 1)
             newPosition = 1;
         this.relativeBounds.setHorizontalPosition(newPosition);
-    }
-
-    public Sprite getPlayerStarship() {
-        return this.entitySprite;
     }
 }
