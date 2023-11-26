@@ -22,6 +22,15 @@ public abstract class Entity {
         this.entitySprite = entitySprite;
     }
 
+    public boolean collidesWith(Entity entity) {
+        return (
+                this.relativeBounds.getHorizontalPosition() < entity.relativeBounds.getHorizontalPosition() + entity.relativeBounds.getWidth() &&
+                this.relativeBounds.getHorizontalPosition() + this.relativeBounds.getWidth() > entity.relativeBounds.getHorizontalPosition() &&
+                this.relativeBounds.getVerticalPosition() < entity.relativeBounds.getVerticalPosition() + entity.relativeBounds.getHeight() &&
+                this.relativeBounds.getVerticalPosition() + this.relativeBounds.getHeight() > entity.relativeBounds.getVerticalPosition()
+        );
+    }
+
     public RelativeBounds getRelativeBounds() {
         return relativeBounds;
     }

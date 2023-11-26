@@ -9,35 +9,28 @@ import java.awt.event.ActionListener;
 
 
 public class Projectile extends Entity implements ActionListener {
-    private Timer timer = new Timer(10, this);
-    private Direction direction; //TODO: flip the projectile image based on direction but before it is painted
-    private boolean visible;
+    private Timer movementTimer = new Timer(50, this);
+    private final double moveStep = 0.01;
+    private final double moveSpeed = 5;
+    private boolean outOfBounds;
 
     public Projectile(RelativeBounds relativeBounds, Direction direction) {
         super(relativeBounds, new Sprite("/projectile.png"));
-        if(direction == Direction.UP || direction == Direction.DOWN)
-            this.direction = direction;
-        else
-            throw new IllegalArgumentException("Direction for projectile can only be UP or DOWN");
-        this.visible = true;
-        timer.start();
+        this.outOfBounds = false;
+        movementTimer.start();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        this.relativeBounds.setVerticalPosition(this.relativeBounds.getVerticalPosition() + this.direction.value * 0.01);
+        this.relativeBounds.setVerticalPosition(relativeBounds.getVerticalPosition() - moveStep * moveSpeed);
         if(
                 this.relativeBounds.getVerticalPosition() <= - this.relativeBounds.getHeight() ||
                 this.relativeBounds.getVerticalPosition() == 0
         )
-            this.visible = false;
+            this.outOfBounds = true;
     }
 
-    public Direction getDirection() {
-        return direction;
-    }
-
-    public boolean isVisible() {
-        return visible;
+    public boolean isOutOfBounds() {
+        return outOfBounds;
     }
 }

@@ -48,8 +48,7 @@ public class Player extends Entity {
                             this.relativeBounds.getHorizontalPosition() + this.relativeBounds.getWidth() / 4, //center of the player spaceship
                             this.relativeBounds.getVerticalPosition(),
                             0.05,
-                            0.1,
-                            false
+                            0.1
                     ),
                     Direction.UP
             );

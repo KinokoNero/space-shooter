@@ -1,8 +1,6 @@
 package com.jpwmii.spaceshooter.graphics;
 
-import com.jpwmii.spaceshooter.entities.Entity;
-import com.jpwmii.spaceshooter.entities.Player;
-import com.jpwmii.spaceshooter.entities.Projectile;
+import com.jpwmii.spaceshooter.entities.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,18 +8,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
 
-public class GameComponent extends JComponent implements ActionListener {
+public class GameComponent extends JComponent {
     private final int animationSpeed = 50;
     private final Sprite background;
     private final Player player;
-    private ArrayList<Projectile> projectileList = new ArrayList<>();
+    private final AsteroidSpawner asteroidSpawner;
+    private final int asteroidSpawnFrequency = 1000;
+    private final ArrayList<Projectile> projectileList = new ArrayList<>();
+    private final ArrayList<Asteroid> asteroidList = new ArrayList<>();
 
     public GameComponent() {
         this.background = new Sprite("/background-sprite-sheet.png", 40);
@@ -30,15 +30,42 @@ public class GameComponent extends JComponent implements ActionListener {
         this.player = new Player( //creates player spaceship at the bottom-middle of the window
                 new RelativeBounds(
                         0.5 - playerSpaceshipSpriteSize / 2,
-                        1,
+                        1 - playerSpaceshipSpriteSize,
                         playerSpaceshipSpriteSize,
-                        playerSpaceshipSpriteSize,
-                        true
+                        playerSpaceshipSpriteSize
                 )
         );
 
-        Timer animationTimer = new Timer(animationSpeed, this);
+        //animations
+        ActionListener animationListener = e -> {
+            background.prepareNextFrame();
+            player.getEntitySprite().prepareNextFrame();
+            for(Asteroid asteroid : asteroidList) {
+                asteroid.getEntitySprite().prepareNextFrame();
+            }
+            repaint();
+        };
+        Timer animationTimer = new Timer(animationSpeed, animationListener);
         animationTimer.start();
+
+        //asteroids
+        this.asteroidSpawner = new AsteroidSpawner();
+        ActionListener asteroidSpawnerListener = e -> {
+            Asteroid asteroid = asteroidSpawner.spawnAsteroid();
+            asteroidList.add(asteroid);
+        };
+        Timer asteroidSpawnerTimer = new Timer(asteroidSpawnFrequency, asteroidSpawnerListener);
+        asteroidSpawnerTimer.start();
+
+        ActionListener collisionListener = e -> {
+            handleCollisions();
+        };
+        Timer collisionDetectionTimer = new Timer(animationSpeed, collisionListener);
+        collisionDetectionTimer.start();
+    }
+
+    private void handleCollisions() {
+
     }
 
     //region Paint methods
@@ -49,14 +76,27 @@ public class GameComponent extends JComponent implements ActionListener {
         //background
         paintBackground(g);
 
+        //all asteroids
+        Iterator<Asteroid> asteroidIterator = asteroidList.iterator();
+        while (asteroidIterator.hasNext()) {
+            Asteroid asteroid = asteroidIterator.next();
+            if (asteroid.isOutOfBounds()) {
+                asteroidIterator.remove();
+            }
+            else {
+                paintEntity(g, asteroid);
+            }
+        }
+
         //all projectiles
         Iterator<Projectile> projectileIterator = projectileList.iterator();
         while (projectileIterator.hasNext()) {
             Projectile projectile = projectileIterator.next();
-            if (projectile.isVisible()) {
-                paintEntity(g, projectile);
-            } else {
+            if (projectile.isOutOfBounds()) {
                 projectileIterator.remove();
+            }
+            else {
+                paintEntity(g, projectile);
             }
         }
 
@@ -87,13 +127,6 @@ public class GameComponent extends JComponent implements ActionListener {
     //endregion
 
     //region Listeners
-    @Override
-    public void actionPerformed(ActionEvent e) { //Every animation timer tick
-        background.prepareNextFrame();
-        player.getEntitySprite().prepareNextFrame();
-        repaint();
-    }
-
     public static class GameKeyListener implements KeyListener {
         private GameComponent component;
         private Set<Integer> pressedKeys = new HashSet<>();
