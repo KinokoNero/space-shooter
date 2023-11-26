@@ -22,6 +22,7 @@ public class GameComponent extends JComponent {
     private final int asteroidSpawnFrequency = 1000;
     private final ArrayList<Projectile> projectileList = new ArrayList<>();
     private final ArrayList<Asteroid> asteroidList = new ArrayList<>();
+    //private final ArrayList<Explosion> explosionList = new ArrayList<>();
 
     public GameComponent() {
         this.background = new Sprite("/background-sprite-sheet.png", 40);
@@ -57,6 +58,7 @@ public class GameComponent extends JComponent {
         Timer asteroidSpawnerTimer = new Timer(asteroidSpawnFrequency, asteroidSpawnerListener);
         asteroidSpawnerTimer.start();
 
+        //collisions
         ActionListener collisionListener = e -> {
             handleCollisions();
         };
@@ -65,7 +67,17 @@ public class GameComponent extends JComponent {
     }
 
     private void handleCollisions() {
-
+        Iterator<Projectile> projectileIterator = projectileList.iterator();
+        Iterator<Asteroid> asteroidIterator = asteroidList.iterator();
+        while(projectileIterator.hasNext() && asteroidIterator.hasNext()) {
+            Projectile projectile = projectileIterator.next();
+            Asteroid asteroid = asteroidIterator.next();
+            if(projectile.collidesWith(asteroid)) {
+                projectileIterator.remove();
+                asteroidIterator.remove();
+                asteroid.explode();
+            }
+        }
     }
 
     //region Paint methods

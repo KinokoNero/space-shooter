@@ -31,6 +31,10 @@ public abstract class Entity {
         );
     }
 
+    public void explode() {
+        //TODO
+    }
+
     public RelativeBounds getRelativeBounds() {
         return relativeBounds;
     }
