@@ -7,7 +7,9 @@ import javax.swing.*;
 import java.net.URL;
 
 public class Player extends Entity {
+    private final double moveStep = 0.01;
     private int lives;
+    private boolean alive;
     private int score;
     private ImageIcon lifeIcon;
     private Timer shotCooldownTimer = new Timer(500, e -> ((Timer) e.getSource()).stop());
@@ -18,6 +20,7 @@ public class Player extends Entity {
                 new Sprite("/player-spaceship-sprite-sheet.png", 101)
         );
         this.lives = 3;
+        this.alive = true;
         this.score = 0;
         loadResources();
     }
@@ -32,7 +35,7 @@ public class Player extends Entity {
     }
 
     public void move(Direction direction) { //direction value is either (-1) for LEFT or (1) for RIGHT
-        double newPosition = this.relativeBounds.getHorizontalPosition() + movementStep * direction.value;
+        double newPosition = this.relativeBounds.getHorizontalPosition() + moveStep * direction.value;
         if(newPosition < 0)
             newPosition = 0;
         if(newPosition > 1)
@@ -54,5 +57,15 @@ public class Player extends Entity {
             );
         }
         return null;
+    }
+
+    public void receiveDamage() {
+        this.lives--;
+        if(this.lives <= 0)
+            this.alive = false;
+    }
+
+    public boolean isAlive() {
+        return alive;
     }
 }

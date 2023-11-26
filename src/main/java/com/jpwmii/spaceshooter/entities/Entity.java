@@ -5,7 +5,7 @@ import com.jpwmii.spaceshooter.graphics.Sprite;
 
 public abstract class Entity {
     protected RelativeBounds relativeBounds;
-    protected final double movementStep = 0.01;
+    //protected final double movementStep = 0.01;
     protected Sprite entitySprite;
     public enum Direction {
         LEFT(-1), RIGHT(1), UP(-1), DOWN(1);
@@ -29,10 +29,6 @@ public abstract class Entity {
                 this.relativeBounds.getVerticalPosition() < entity.relativeBounds.getVerticalPosition() + entity.relativeBounds.getHeight() &&
                 this.relativeBounds.getVerticalPosition() + this.relativeBounds.getHeight() > entity.relativeBounds.getVerticalPosition()
         );
-    }
-
-    public void explode() {
-        //TODO
     }
 
     public RelativeBounds getRelativeBounds() {

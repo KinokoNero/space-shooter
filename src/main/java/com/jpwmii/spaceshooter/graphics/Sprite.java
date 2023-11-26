@@ -54,4 +54,12 @@ public class Sprite {
     public BufferedImage getSpriteFrame() {
         return this.spriteFrame;
     }
+
+    public int getFrameIndex() {
+        return frameIndex;
+    }
+
+    public int getFrameCount() {
+        return frameCount;
+    }
 }

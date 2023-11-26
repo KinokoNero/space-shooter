@@ -9,8 +9,8 @@ import java.awt.event.ActionListener;
 
 
 public class Projectile extends Entity implements ActionListener {
-    private Timer movementTimer = new Timer(50, this);
-    private final double moveStep = 0.01;
+    private Timer movementTimer = new Timer(5, this);
+    private final double moveStep = 0.001;
     private final double moveSpeed = 5;
     private boolean outOfBounds;
 

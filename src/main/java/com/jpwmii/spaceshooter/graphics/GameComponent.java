@@ -4,7 +4,6 @@ import com.jpwmii.spaceshooter.entities.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -22,7 +21,7 @@ public class GameComponent extends JComponent {
     private final int asteroidSpawnFrequency = 1000;
     private final ArrayList<Projectile> projectileList = new ArrayList<>();
     private final ArrayList<Asteroid> asteroidList = new ArrayList<>();
-    //private final ArrayList<Explosion> explosionList = new ArrayList<>();
+    private final ArrayList<Explosion> explosionList = new ArrayList<>();
 
     public GameComponent() {
         this.background = new Sprite("/background-sprite-sheet.png", 40);
@@ -44,10 +43,18 @@ public class GameComponent extends JComponent {
             for(Asteroid asteroid : asteroidList) {
                 asteroid.getEntitySprite().prepareNextFrame();
             }
+            for(Explosion explosion : explosionList) {
+                explosion.getEntitySprite().prepareNextFrame();
+            }
             repaint();
         };
         Timer animationTimer = new Timer(animationSpeed, animationListener);
         animationTimer.start();
+
+        //collisions
+        ActionListener collisionListener = e -> handleCollisions();
+        Timer collisionDetectionTimer = new Timer(1, collisionListener);
+        collisionDetectionTimer.start();
 
         //asteroids
         this.asteroidSpawner = new AsteroidSpawner();
@@ -57,25 +64,35 @@ public class GameComponent extends JComponent {
         };
         Timer asteroidSpawnerTimer = new Timer(asteroidSpawnFrequency, asteroidSpawnerListener);
         asteroidSpawnerTimer.start();
-
-        //collisions
-        ActionListener collisionListener = e -> {
-            handleCollisions();
-        };
-        Timer collisionDetectionTimer = new Timer(animationSpeed, collisionListener);
-        collisionDetectionTimer.start();
     }
 
     private void handleCollisions() {
+        //projectile-asteroid collision
         Iterator<Projectile> projectileIterator = projectileList.iterator();
-        Iterator<Asteroid> asteroidIterator = asteroidList.iterator();
-        while(projectileIterator.hasNext() && asteroidIterator.hasNext()) {
+        while(projectileIterator.hasNext()) {
             Projectile projectile = projectileIterator.next();
+            Iterator<Asteroid> asteroidIterator = asteroidList.iterator();
+            while(asteroidIterator.hasNext()) {
+                Asteroid asteroid = asteroidIterator.next();
+                if (projectile.collidesWith(asteroid)) {
+                    projectileIterator.remove();
+                    asteroidIterator.remove();
+                    Explosion explosion = asteroid.explode();
+                    explosionList.add(explosion);
+                    break; // Exit the inner loop after handling the collision with the current projectile
+                }
+            }
+        }
+
+        //asteroid-player collision
+        Iterator<Asteroid> asteroidIterator = asteroidList.iterator();
+        while (asteroidIterator.hasNext()) {
             Asteroid asteroid = asteroidIterator.next();
-            if(projectile.collidesWith(asteroid)) {
-                projectileIterator.remove();
+            if (player.collidesWith(asteroid)) {
+                this.player.receiveDamage();
                 asteroidIterator.remove();
-                asteroid.explode();
+                Explosion explosion = asteroid.explode();
+                explosionList.add(explosion);
             }
         }
     }
@@ -90,7 +107,7 @@ public class GameComponent extends JComponent {
 
         //all asteroids
         Iterator<Asteroid> asteroidIterator = asteroidList.iterator();
-        while (asteroidIterator.hasNext()) {
+        while(asteroidIterator.hasNext()) {
             Asteroid asteroid = asteroidIterator.next();
             if (asteroid.isOutOfBounds()) {
                 asteroidIterator.remove();
@@ -102,7 +119,7 @@ public class GameComponent extends JComponent {
 
         //all projectiles
         Iterator<Projectile> projectileIterator = projectileList.iterator();
-        while (projectileIterator.hasNext()) {
+        while(projectileIterator.hasNext()) {
             Projectile projectile = projectileIterator.next();
             if (projectile.isOutOfBounds()) {
                 projectileIterator.remove();
@@ -110,6 +127,16 @@ public class GameComponent extends JComponent {
             else {
                 paintEntity(g, projectile);
             }
+        }
+
+        //all explosions
+        Iterator<Explosion> explosionIterator = explosionList.iterator();
+        while(explosionIterator.hasNext()) {
+            Explosion explosion = explosionIterator.next();
+            if(explosion.isAnimationDone())
+                explosionIterator.remove();
+            else
+                paintEntity(g, explosion);
         }
 
         //player spaceship

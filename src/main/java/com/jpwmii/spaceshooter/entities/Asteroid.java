@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 
 public class Asteroid extends Entity implements ActionListener {
     private final double moveSpeed;
-    private final double moveStep = 0.01;
+    private final double moveStep = 0.001;
     private boolean outOfBounds;
     private Timer movementTimer;
 
@@ -20,8 +20,18 @@ public class Asteroid extends Entity implements ActionListener {
         );
         this.moveSpeed = moveSpeed;
         this.outOfBounds = false;
-        movementTimer = new Timer(50, this);
+        movementTimer = new Timer(5, this);
         movementTimer.start();
+    }
+
+    /*public void move() {
+        this.relativeBounds.setVerticalPosition(relativeBounds.getVerticalPosition() + moveStep * moveSpeed);
+        if(this.relativeBounds.getVerticalPosition() > 1)
+            this.outOfBounds = true;
+    }*/
+
+    public Explosion explode() {
+        return new Explosion(this.relativeBounds);
     }
 
     @Override
