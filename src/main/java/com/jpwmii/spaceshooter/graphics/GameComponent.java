@@ -24,7 +24,7 @@ public class GameComponent extends JComponent {
     private final ArrayList<Explosion> explosionList = new ArrayList<>();
 
     public GameComponent() {
-        this.background = new Sprite("/background-sprite-sheet.png", 40);
+        this.background = new Sprite("/images/background-sprite-sheet.png", 40);
 
         double playerSpaceshipSpriteSize = 0.1;
         this.player = new Player( //creates player spaceship at the bottom-middle of the window
@@ -79,7 +79,8 @@ public class GameComponent extends JComponent {
                     asteroidIterator.remove();
                     Explosion explosion = asteroid.explode();
                     explosionList.add(explosion);
-                    break; // Exit the inner loop after handling the collision with the current projectile
+                    this.player.setScore(this.player.getScore() + 1);
+                    break; //Exit the inner loop after handling the collision with the current projectile
                 }
             }
         }
@@ -141,6 +142,9 @@ public class GameComponent extends JComponent {
 
         //player spaceship
         paintEntity(g, this.player);
+
+        //HUD
+        paintHUD(g);
     }
 
     private void paintBackground(Graphics g) {
@@ -148,6 +152,35 @@ public class GameComponent extends JComponent {
         int windowWidth = getParent().getWidth();
         int windowHeight = getParent().getHeight();
         g.drawImage(backgroundFrame, 0, 0, windowWidth, windowHeight, this);
+    }
+
+    private void paintHUD(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+        int windowWidth = getParent().getWidth();
+        int windowHeight = getParent().getHeight();
+
+        //score
+        int fontSize = (int) (0.05 * windowWidth);
+        Font font = new Font("Arial", Font.BOLD, fontSize);
+        g2d.setFont(font);
+        g2d.setColor(Color.WHITE);
+        g2d.drawString("Score: " + this.player.getScore(), (int) (0.02 * windowWidth), (int) (0.03 * windowHeight + fontSize / 2));
+
+        //lives
+        Image lifeIconImage = this.player.getLifeIcon().getImage();
+        double lifeIconImageWidth = 0.07;
+        double lifeIconImageHeight = 0.07;
+        double bufferBetweenIcons = 0.02;
+        for(int i = 0; i < this.player.getLives(); i++) {
+            g2d.drawImage(
+                    lifeIconImage,
+                    (int) ((1 - (bufferBetweenIcons + lifeIconImageWidth) - i * (bufferBetweenIcons + lifeIconImageWidth)) * windowWidth),
+                    (int) (0.02 * windowHeight),
+                    (int) (lifeIconImageWidth * windowWidth),
+                    (int) (lifeIconImageHeight * windowHeight),
+                    this
+            );
+        }
     }
 
     private void paintEntity(Graphics g, Entity entity) {

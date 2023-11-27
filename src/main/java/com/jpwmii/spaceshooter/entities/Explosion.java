@@ -7,7 +7,7 @@ public class Explosion extends Entity {
     private RelativeBounds relativeBounds;
     private boolean animationDone;
     public Explosion(RelativeBounds relativeBounds) {
-        super(relativeBounds, new Sprite("/explosion-sprite-sheet.png", 17));
+        super(relativeBounds, new Sprite("/images/explosion-sprite-sheet.png", 17));
     }
 
     public boolean isAnimationDone() {

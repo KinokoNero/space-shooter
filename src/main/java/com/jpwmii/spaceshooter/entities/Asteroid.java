@@ -16,7 +16,7 @@ public class Asteroid extends Entity implements ActionListener {
     public Asteroid(RelativeBounds relativeBounds, double moveSpeed) {
         super(
                 relativeBounds,
-                new Sprite("/asteroid-sprite-sheet.png", 20)
+                new Sprite("/images/asteroid-sprite-sheet.png", 20)
         );
         this.moveSpeed = moveSpeed;
         this.outOfBounds = false;

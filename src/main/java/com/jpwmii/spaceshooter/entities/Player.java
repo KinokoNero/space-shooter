@@ -17,7 +17,7 @@ public class Player extends Entity {
     public Player(RelativeBounds relativeBounds) {
         super(
                 relativeBounds,
-                new Sprite("/player-spaceship-sprite-sheet.png", 101)
+                new Sprite("/images/player-spaceship-sprite-sheet.png", 101)
         );
         this.lives = 3;
         this.alive = true;
@@ -26,7 +26,7 @@ public class Player extends Entity {
     }
 
     private void loadResources() {
-        URL imageUrl = getClass().getResource("/heart.png");
+        URL imageUrl = getClass().getResource("/images/heart.png");
         if (imageUrl != null) {
             this.lifeIcon = new ImageIcon(imageUrl);
         } else {
@@ -65,7 +65,23 @@ public class Player extends Entity {
             this.alive = false;
     }
 
+    public int getLives() {
+        return lives;
+    }
+
     public boolean isAlive() {
         return alive;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public ImageIcon getLifeIcon() {
+        return lifeIcon;
     }
 }

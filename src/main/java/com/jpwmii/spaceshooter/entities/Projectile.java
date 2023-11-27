@@ -15,7 +15,7 @@ public class Projectile extends Entity implements ActionListener {
     private boolean outOfBounds;
 
     public Projectile(RelativeBounds relativeBounds, Direction direction) {
-        super(relativeBounds, new Sprite("/projectile.png"));
+        super(relativeBounds, new Sprite("/images/projectile.png"));
         this.outOfBounds = false;
         movementTimer.start();
     }
