@@ -1,5 +1,6 @@
 package com.jpwmii.spaceshooter.entities;
 
+import com.jpwmii.spaceshooter.audio.AudioPlayer;
 import com.jpwmii.spaceshooter.graphics.RelativeBounds;
 import com.jpwmii.spaceshooter.graphics.Sprite;
 
@@ -24,13 +25,8 @@ public class Asteroid extends Entity implements ActionListener {
         movementTimer.start();
     }
 
-    /*public void move() {
-        this.relativeBounds.setVerticalPosition(relativeBounds.getVerticalPosition() + moveStep * moveSpeed);
-        if(this.relativeBounds.getVerticalPosition() > 1)
-            this.outOfBounds = true;
-    }*/
-
     public Explosion explode() {
+        AudioPlayer.playExplosionSound();
         return new Explosion(this.relativeBounds);
     }
 

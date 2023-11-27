@@ -1,5 +1,6 @@
 package com.jpwmii.spaceshooter.entities;
 
+import com.jpwmii.spaceshooter.audio.AudioPlayer;
 import com.jpwmii.spaceshooter.graphics.RelativeBounds;
 import com.jpwmii.spaceshooter.graphics.Sprite;
 
@@ -43,8 +44,9 @@ public class Player extends Entity {
         this.relativeBounds.setHorizontalPosition(newPosition);
     }
 
-    public Projectile createProjectile() {
+    public Projectile shoot() {
         if(!shotCooldownTimer.isRunning()) {
+            AudioPlayer.playLaserSound();
             shotCooldownTimer.start();
             return new Projectile(
                     new RelativeBounds(

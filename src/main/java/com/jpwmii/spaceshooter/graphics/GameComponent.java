@@ -1,5 +1,6 @@
 package com.jpwmii.spaceshooter.graphics;
 
+import com.jpwmii.spaceshooter.audio.AudioPlayer;
 import com.jpwmii.spaceshooter.entities.*;
 
 import javax.swing.*;
@@ -51,12 +52,7 @@ public class GameComponent extends JComponent {
         Timer animationTimer = new Timer(animationSpeed, animationListener);
         animationTimer.start();
 
-        //collisions
-        ActionListener collisionListener = e -> handleCollisions();
-        Timer collisionDetectionTimer = new Timer(1, collisionListener);
-        collisionDetectionTimer.start();
-
-        //asteroids
+        //asteroids spawning
         this.asteroidSpawner = new AsteroidSpawner();
         ActionListener asteroidSpawnerListener = e -> {
             Asteroid asteroid = asteroidSpawner.spawnAsteroid();
@@ -64,6 +60,8 @@ public class GameComponent extends JComponent {
         };
         Timer asteroidSpawnerTimer = new Timer(asteroidSpawnFrequency, asteroidSpawnerListener);
         asteroidSpawnerTimer.start();
+
+        AudioPlayer.playBackgroundMusic();
     }
 
     private void handleCollisions() {
@@ -76,9 +74,9 @@ public class GameComponent extends JComponent {
                 Asteroid asteroid = asteroidIterator.next();
                 if (projectile.collidesWith(asteroid)) {
                     projectileIterator.remove();
-                    asteroidIterator.remove();
                     Explosion explosion = asteroid.explode();
                     explosionList.add(explosion);
+                    asteroidIterator.remove();
                     this.player.setScore(this.player.getScore() + 1);
                     break; //Exit the inner loop after handling the collision with the current projectile
                 }
@@ -90,10 +88,10 @@ public class GameComponent extends JComponent {
         while (asteroidIterator.hasNext()) {
             Asteroid asteroid = asteroidIterator.next();
             if (player.collidesWith(asteroid)) {
-                this.player.receiveDamage();
-                asteroidIterator.remove();
                 Explosion explosion = asteroid.explode();
                 explosionList.add(explosion);
+                asteroidIterator.remove();
+                this.player.receiveDamage();
             }
         }
     }
@@ -145,6 +143,8 @@ public class GameComponent extends JComponent {
 
         //HUD
         paintHUD(g);
+
+        handleCollisions();
     }
 
     private void paintBackground(Graphics g) {
@@ -207,23 +207,23 @@ public class GameComponent extends JComponent {
             this.component = component;
         }
 
-        private void handleKeys() { //TODO: stops shooting after releasing a movement key
+        private void handleKeys() {
             if(pressedKeys.contains(KeyEvent.VK_SPACE)) {
-                Projectile projectile = component.player.createProjectile();
+                Projectile projectile = component.player.shoot();
                 if(projectile != null) {
                     component.projectileList.add(projectile);
-                    component.repaint();
+                    //component.repaint();
                 }
             }
 
             if (pressedKeys.contains(KeyEvent.VK_LEFT)) {
                 component.player.move(Entity.Direction.LEFT);
-                component.repaint();
+                //component.repaint();
             }
 
             if (pressedKeys.contains(KeyEvent.VK_RIGHT)) {
                 component.player.move(Entity.Direction.RIGHT);
-                component.repaint();
+                //component.repaint();
             }
         }
 
