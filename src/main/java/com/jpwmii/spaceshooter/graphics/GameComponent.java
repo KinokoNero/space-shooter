@@ -111,7 +111,16 @@ public class GameComponent extends JComponent {
         paintBackground(g);
 
         switch(currentProgramState) {
-            case MENU -> {}
+            case MENU -> {
+                Graphics2D g2d = (Graphics2D) g;
+                int windowWidth = getParent().getWidth();
+                int windowHeight = getParent().getHeight();
+                int fontSize = (int) (0.06 * windowWidth);
+                Font font = new Font("Arial", Font.BOLD, fontSize);
+                g2d.setFont(font);
+                g2d.setColor(Color.WHITE);
+                g2d.drawString("Press ENTER to start", (int) (0.2 * windowWidth), (int) (0.5 * windowHeight));
+            }
 
             case IN_GAME -> {
                 //all asteroids
@@ -161,7 +170,17 @@ public class GameComponent extends JComponent {
                 }
             }
 
-            case GAME_OVER -> {}
+            case GAME_OVER -> { //TODO: center text in menu and game over screen
+                Graphics2D g2d = (Graphics2D) g;
+                int windowWidth = getParent().getWidth();
+                int windowHeight = getParent().getHeight();
+                int fontSize = (int) (0.06 * windowWidth);
+                Font font = new Font("Arial", Font.BOLD, fontSize);
+                g2d.setFont(font);
+                g2d.setColor(Color.WHITE);
+                g2d.drawString("GAME OVER", (int) (0.2 * windowWidth), (int) (0.4 * windowHeight));
+                g2d.drawString("Press ENTER to restart", (int) (0.2 * windowWidth), (int) (0.6 * windowHeight));
+            }
         }
     }
 

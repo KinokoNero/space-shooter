@@ -96,7 +96,7 @@ public class Game {
     }
 
     //region Key listener
-    public static class GameKeyListener extends KeyAdapter {
+    public static class GameKeyListener extends KeyAdapter { //TODO: prevent playing shooting sound while in game over state; fix double trigger of keys handling
         private GameComponent component;
         private Set<Integer> pressedKeys = new HashSet<>();
 
