@@ -1,33 +1,39 @@
 package com.jpwmii.spaceshooter.graphics;
 
-import com.jpwmii.spaceshooter.audio.AudioPlayer;
 import com.jpwmii.spaceshooter.entities.*;
+import com.jpwmii.spaceshooter.Game;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.HashSet;
 
 public class GameComponent extends JComponent {
+    public enum ProgramState {MENU, IN_GAME, GAME_OVER}
+    private ProgramState currentProgramState;
+    private Game game;
     private final int animationSpeed = 50;
     private final Sprite background;
-    private final Player player;
+    /*private final Player player;
     private final AsteroidSpawner asteroidSpawner;
     private final int asteroidSpawnFrequency = 1000;
     private final ArrayList<Projectile> projectileList = new ArrayList<>();
     private final ArrayList<Asteroid> asteroidList = new ArrayList<>();
-    private final ArrayList<Explosion> explosionList = new ArrayList<>();
+    private final ArrayList<Explosion> explosionList = new ArrayList<>();*/
 
     public GameComponent() {
+        this.currentProgramState = ProgramState.MENU;
         this.background = new Sprite("/images/background-sprite-sheet.png", 40);
 
-        double playerSpaceshipSpriteSize = 0.1;
+        ActionListener gameListener = e -> {
+            background.prepareNextFrame();
+            repaint();
+        };
+        Timer gameTimer = new Timer(animationSpeed, gameListener);
+        gameTimer.start();
+
+        /*double playerSpaceshipSpriteSize = 0.1;
         this.player = new Player( //creates player spaceship at the bottom-middle of the window
                 new RelativeBounds(
                         0.5 - playerSpaceshipSpriteSize / 2,
@@ -61,10 +67,10 @@ public class GameComponent extends JComponent {
         Timer asteroidSpawnerTimer = new Timer(asteroidSpawnFrequency, asteroidSpawnerListener);
         asteroidSpawnerTimer.start();
 
-        AudioPlayer.playBackgroundMusic();
+        AudioPlayer.playBackgroundMusic();*/
     }
 
-    private void handleCollisions() {
+    /*private void handleCollisions() {
         //projectile-asteroid collision
         Iterator<Projectile> projectileIterator = projectileList.iterator();
         while(projectileIterator.hasNext()) {
@@ -94,7 +100,7 @@ public class GameComponent extends JComponent {
                 this.player.receiveDamage();
             }
         }
-    }
+    }*/
 
     //region Paint methods
     @Override
@@ -104,47 +110,59 @@ public class GameComponent extends JComponent {
         //background
         paintBackground(g);
 
-        //all asteroids
-        Iterator<Asteroid> asteroidIterator = asteroidList.iterator();
-        while(asteroidIterator.hasNext()) {
-            Asteroid asteroid = asteroidIterator.next();
-            if (asteroid.isOutOfBounds()) {
-                asteroidIterator.remove();
+        switch(currentProgramState) {
+            case MENU -> {}
+
+            case IN_GAME -> {
+                //all asteroids
+                Iterator<Asteroid> asteroidIterator = game.getAsteroidList().iterator();
+                while (asteroidIterator.hasNext()) {
+                    Asteroid asteroid = asteroidIterator.next();
+                    if (asteroid.isOutOfBounds()) {
+                        asteroidIterator.remove();
+                    } else {
+                        paintEntity(g, asteroid);
+                    }
+                }
+
+                //all projectiles
+                Iterator<Projectile> projectileIterator = game.getProjectileList().iterator();
+                while (projectileIterator.hasNext()) {
+                    Projectile projectile = projectileIterator.next();
+                    if (projectile.isOutOfBounds()) {
+                        projectileIterator.remove();
+                    } else {
+                        paintEntity(g, projectile);
+                    }
+                }
+
+                //all explosions
+                Iterator<Explosion> explosionIterator = game.getExplosionList().iterator();
+                while (explosionIterator.hasNext()) {
+                    Explosion explosion = explosionIterator.next();
+                    if (explosion.isAnimationDone())
+                        explosionIterator.remove();
+                    else
+                        paintEntity(g, explosion);
+                }
+
+                //player spaceship
+                paintEntity(g, game.getPlayer());
+
+                //HUD
+                paintHUD(g);
+
+                game.handleCollisions();
+
+                if(!game.getPlayer().isAlive()) {
+                    this.currentProgramState = ProgramState.GAME_OVER;
+                    this.game = null;
+                    return;
+                }
             }
-            else {
-                paintEntity(g, asteroid);
-            }
+
+            case GAME_OVER -> {}
         }
-
-        //all projectiles
-        Iterator<Projectile> projectileIterator = projectileList.iterator();
-        while(projectileIterator.hasNext()) {
-            Projectile projectile = projectileIterator.next();
-            if (projectile.isOutOfBounds()) {
-                projectileIterator.remove();
-            }
-            else {
-                paintEntity(g, projectile);
-            }
-        }
-
-        //all explosions
-        Iterator<Explosion> explosionIterator = explosionList.iterator();
-        while(explosionIterator.hasNext()) {
-            Explosion explosion = explosionIterator.next();
-            if(explosion.isAnimationDone())
-                explosionIterator.remove();
-            else
-                paintEntity(g, explosion);
-        }
-
-        //player spaceship
-        paintEntity(g, this.player);
-
-        //HUD
-        paintHUD(g);
-
-        handleCollisions();
     }
 
     private void paintBackground(Graphics g) {
@@ -164,14 +182,14 @@ public class GameComponent extends JComponent {
         Font font = new Font("Arial", Font.BOLD, fontSize);
         g2d.setFont(font);
         g2d.setColor(Color.WHITE);
-        g2d.drawString("Score: " + this.player.getScore(), (int) (0.02 * windowWidth), (int) (0.03 * windowHeight + fontSize / 2));
+        g2d.drawString("Score: " + game.getPlayer().getScore(), (int) (0.02 * windowWidth), (int) (0.03 * windowHeight + fontSize / 2));
 
         //lives
-        Image lifeIconImage = this.player.getLifeIcon().getImage();
+        Image lifeIconImage = game.getPlayer().getLifeIcon().getImage();
         double lifeIconImageWidth = 0.07;
         double lifeIconImageHeight = 0.07;
         double bufferBetweenIcons = 0.02;
-        for(int i = 0; i < this.player.getLives(); i++) {
+        for(int i = 0; i < game.getPlayer().getLives(); i++) {
             g2d.drawImage(
                     lifeIconImage,
                     (int) ((1 - (bufferBetweenIcons + lifeIconImageWidth) - i * (bufferBetweenIcons + lifeIconImageWidth)) * windowWidth),
@@ -199,7 +217,7 @@ public class GameComponent extends JComponent {
     //endregion
 
     //region Listeners
-    public static class GameKeyListener implements KeyListener {
+    /*public static class GameKeyListener implements KeyListener {
         private GameComponent component;
         private Set<Integer> pressedKeys = new HashSet<>();
 
@@ -208,22 +226,20 @@ public class GameComponent extends JComponent {
         }
 
         private void handleKeys() {
+            System.out.println("key handle");
             if(pressedKeys.contains(KeyEvent.VK_SPACE)) {
-                Projectile projectile = component.player.shoot();
+                Projectile projectile = component.game.getPlayer().shoot();
                 if(projectile != null) {
-                    component.projectileList.add(projectile);
-                    //component.repaint();
+                    component.game.getProjectileList().add(projectile);
                 }
             }
 
             if (pressedKeys.contains(KeyEvent.VK_LEFT)) {
-                component.player.move(Entity.Direction.LEFT);
-                //component.repaint();
+                component.game.getPlayer().move(Entity.Direction.LEFT);
             }
 
             if (pressedKeys.contains(KeyEvent.VK_RIGHT)) {
-                component.player.move(Entity.Direction.RIGHT);
-                //component.repaint();
+                component.game.getPlayer().move(Entity.Direction.RIGHT);
             }
         }
 
@@ -231,7 +247,7 @@ public class GameComponent extends JComponent {
         public void keyPressed(KeyEvent e) {
             int keyCode = e.getKeyCode();
             pressedKeys.add(keyCode);
-            handleKeys();
+            //handleKeys();
         }
 
         @Override
@@ -243,6 +259,22 @@ public class GameComponent extends JComponent {
 
         @Override
         public void keyTyped(KeyEvent e) {}
-    }
+    }*/
     //endregion
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
+    public ProgramState getCurrentProgramState() {
+        return currentProgramState;
+    }
+
+    public void setCurrentProgramState(ProgramState currentProgramState) {
+        this.currentProgramState = currentProgramState;
+    }
 }

@@ -47,7 +47,7 @@ public class Player extends Entity {
     public Projectile shoot() {
         if(!shotCooldownTimer.isRunning()) {
             AudioPlayer.playLaserSound();
-            shotCooldownTimer.start();
+            shotCooldownTimer.restart();
             return new Projectile(
                     new RelativeBounds(
                             this.relativeBounds.getHorizontalPosition() + this.relativeBounds.getWidth() / 4, //center of the player spaceship
