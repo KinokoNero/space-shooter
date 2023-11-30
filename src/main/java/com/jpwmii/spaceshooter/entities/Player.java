@@ -13,7 +13,8 @@ public class Player extends Entity {
     private boolean alive;
     private int score;
     private ImageIcon lifeIcon;
-    private Timer shotCooldownTimer = new Timer(500, e -> ((Timer) e.getSource()).stop());
+    private static final int SHOT_COOLDOWN = 500;
+    private Timer shotCooldownTimer = new Timer(SHOT_COOLDOWN, e -> ((Timer) e.getSource()).stop());
 
     public Player(RelativeBounds relativeBounds) {
         super(
@@ -48,6 +49,7 @@ public class Player extends Entity {
         if(!shotCooldownTimer.isRunning()) {
             AudioPlayer.playLaserSound();
             shotCooldownTimer.restart();
+
             return new Projectile(
                     new RelativeBounds(
                             this.relativeBounds.getHorizontalPosition() + this.relativeBounds.getWidth() / 4, //center of the player spaceship

@@ -1,5 +1,6 @@
 package com.jpwmii.spaceshooter.graphics;
 
+import com.jpwmii.spaceshooter.audio.AudioPlayer;
 import com.jpwmii.spaceshooter.entities.*;
 import com.jpwmii.spaceshooter.Game;
 
@@ -33,74 +34,8 @@ public class GameComponent extends JComponent {
         Timer gameTimer = new Timer(animationSpeed, gameListener);
         gameTimer.start();
 
-        /*double playerSpaceshipSpriteSize = 0.1;
-        this.player = new Player( //creates player spaceship at the bottom-middle of the window
-                new RelativeBounds(
-                        0.5 - playerSpaceshipSpriteSize / 2,
-                        1 - playerSpaceshipSpriteSize,
-                        playerSpaceshipSpriteSize,
-                        playerSpaceshipSpriteSize
-                )
-        );
-
-        //animations
-        ActionListener animationListener = e -> {
-            background.prepareNextFrame();
-            player.getEntitySprite().prepareNextFrame();
-            for(Asteroid asteroid : asteroidList) {
-                asteroid.getEntitySprite().prepareNextFrame();
-            }
-            for(Explosion explosion : explosionList) {
-                explosion.getEntitySprite().prepareNextFrame();
-            }
-            repaint();
-        };
-        Timer animationTimer = new Timer(animationSpeed, animationListener);
-        animationTimer.start();
-
-        //asteroids spawning
-        this.asteroidSpawner = new AsteroidSpawner();
-        ActionListener asteroidSpawnerListener = e -> {
-            Asteroid asteroid = asteroidSpawner.spawnAsteroid();
-            asteroidList.add(asteroid);
-        };
-        Timer asteroidSpawnerTimer = new Timer(asteroidSpawnFrequency, asteroidSpawnerListener);
-        asteroidSpawnerTimer.start();
-
-        AudioPlayer.playBackgroundMusic();*/
+        AudioPlayer.playBackgroundMusic();
     }
-
-    /*private void handleCollisions() {
-        //projectile-asteroid collision
-        Iterator<Projectile> projectileIterator = projectileList.iterator();
-        while(projectileIterator.hasNext()) {
-            Projectile projectile = projectileIterator.next();
-            Iterator<Asteroid> asteroidIterator = asteroidList.iterator();
-            while(asteroidIterator.hasNext()) {
-                Asteroid asteroid = asteroidIterator.next();
-                if (projectile.collidesWith(asteroid)) {
-                    projectileIterator.remove();
-                    Explosion explosion = asteroid.explode();
-                    explosionList.add(explosion);
-                    asteroidIterator.remove();
-                    this.player.setScore(this.player.getScore() + 1);
-                    break; //Exit the inner loop after handling the collision with the current projectile
-                }
-            }
-        }
-
-        //asteroid-player collision
-        Iterator<Asteroid> asteroidIterator = asteroidList.iterator();
-        while (asteroidIterator.hasNext()) {
-            Asteroid asteroid = asteroidIterator.next();
-            if (player.collidesWith(asteroid)) {
-                Explosion explosion = asteroid.explode();
-                explosionList.add(explosion);
-                asteroidIterator.remove();
-                this.player.receiveDamage();
-            }
-        }
-    }*/
 
     //region Paint methods
     @Override
@@ -119,7 +54,17 @@ public class GameComponent extends JComponent {
                 Font font = new Font("Arial", Font.BOLD, fontSize);
                 g2d.setFont(font);
                 g2d.setColor(Color.WHITE);
-                g2d.drawString("Press ENTER to start", (int) (0.2 * windowWidth), (int) (0.5 * windowHeight));
+
+                String startText = "Press ENTER to start";
+
+                FontMetrics fontMetrics = g2d.getFontMetrics(font);
+                int startTextWidth = fontMetrics.stringWidth(startText);
+                int textHeight = fontMetrics.getHeight();
+
+                int startX = (windowWidth - startTextWidth) / 2;
+                int y = (windowHeight - textHeight) / 2;
+
+                g2d.drawString(startText, startX, y);
             }
 
             case IN_GAME -> {
@@ -165,12 +110,11 @@ public class GameComponent extends JComponent {
 
                 if(!game.getPlayer().isAlive()) {
                     this.currentProgramState = ProgramState.GAME_OVER;
-                    this.game = null;
                     return;
                 }
             }
 
-            case GAME_OVER -> { //TODO: center text in menu and game over screen
+            case GAME_OVER -> {
                 Graphics2D g2d = (Graphics2D) g;
                 int windowWidth = getParent().getWidth();
                 int windowHeight = getParent().getHeight();
@@ -178,8 +122,25 @@ public class GameComponent extends JComponent {
                 Font font = new Font("Arial", Font.BOLD, fontSize);
                 g2d.setFont(font);
                 g2d.setColor(Color.WHITE);
-                g2d.drawString("GAME OVER", (int) (0.2 * windowWidth), (int) (0.4 * windowHeight));
-                g2d.drawString("Press ENTER to restart", (int) (0.2 * windowWidth), (int) (0.6 * windowHeight));
+
+                String gameOverText = "GAME OVER";
+                String playerScoreText = "Your Score: " + this.game.getPlayer().getScore();
+                String restartText = "Press ENTER to restart";
+
+                FontMetrics fontMetrics = g2d.getFontMetrics(font);
+                int gameOverTextWidth = fontMetrics.stringWidth(gameOverText);
+                int restartTextWidth = fontMetrics.stringWidth(restartText);
+                int playerScoreTextWidth = fontMetrics.stringWidth(playerScoreText);
+                int textHeight = fontMetrics.getHeight();
+
+                int gameOverTextX = (windowWidth - gameOverTextWidth) / 2;
+                int restartTextX = (windowWidth - restartTextWidth) / 2;
+                int playerScoreTextX = (windowWidth - playerScoreTextWidth) / 2;
+                int y = (windowHeight - textHeight) / 2;
+
+                g2d.drawString(gameOverText, gameOverTextX, y);
+                g2d.drawString(playerScoreText, playerScoreTextX, y + textHeight);
+                g2d.drawString(restartText, restartTextX, y + 2 * textHeight);
             }
         }
     }
@@ -233,52 +194,6 @@ public class GameComponent extends JComponent {
 
         g.drawImage(entitySprite, posX, posY, width, height, this);
     }
-    //endregion
-
-    //region Listeners
-    /*public static class GameKeyListener implements KeyListener {
-        private GameComponent component;
-        private Set<Integer> pressedKeys = new HashSet<>();
-
-        public GameKeyListener(GameComponent component) {
-            this.component = component;
-        }
-
-        private void handleKeys() {
-            System.out.println("key handle");
-            if(pressedKeys.contains(KeyEvent.VK_SPACE)) {
-                Projectile projectile = component.game.getPlayer().shoot();
-                if(projectile != null) {
-                    component.game.getProjectileList().add(projectile);
-                }
-            }
-
-            if (pressedKeys.contains(KeyEvent.VK_LEFT)) {
-                component.game.getPlayer().move(Entity.Direction.LEFT);
-            }
-
-            if (pressedKeys.contains(KeyEvent.VK_RIGHT)) {
-                component.game.getPlayer().move(Entity.Direction.RIGHT);
-            }
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            int keyCode = e.getKeyCode();
-            pressedKeys.add(keyCode);
-            //handleKeys();
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-            int keyCode = e.getKeyCode();
-            pressedKeys.remove(keyCode);
-            handleKeys();
-        }
-
-        @Override
-        public void keyTyped(KeyEvent e) {}
-    }*/
     //endregion
 
     public Game getGame() {

@@ -4,6 +4,7 @@ import com.jpwmii.spaceshooter.graphics.GameComponent;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyListener;
 
 public class MainForm extends JFrame {
     private JPanel mainPanel;
@@ -21,6 +22,13 @@ public class MainForm extends JFrame {
         gameComponent = new GameComponent();
         gameComponent.setPreferredSize(new Dimension(getWidth(), getHeight()));
         this.add(gameComponent);
+
+        //Remove existing key listeners if any
+        KeyListener[] keyListeners = this.getKeyListeners();
+        for (KeyListener listener : keyListeners) {
+            this.removeKeyListener(listener);
+        }
+
         this.addKeyListener(new Game.GameKeyListener(gameComponent));
     }
 }

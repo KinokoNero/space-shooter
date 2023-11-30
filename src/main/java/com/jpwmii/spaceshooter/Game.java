@@ -25,8 +25,6 @@ public class Game {
     private final ArrayList<Explosion> explosionList = new ArrayList<>();
 
     public Game() {
-        //this.background = new Sprite("/images/background-sprite-sheet.png", 40);
-
         double playerSpaceshipSpriteSize = 0.1;
         this.player = new Player( //creates player spaceship at the bottom-middle of the window
                 new RelativeBounds(
@@ -39,7 +37,6 @@ public class Game {
 
         //animations
         ActionListener animationListener = e -> {
-            //background.prepareNextFrame();
             player.getEntitySprite().prepareNextFrame();
             for(Asteroid asteroid : asteroidList) {
                 asteroid.getEntitySprite().prepareNextFrame();
@@ -60,7 +57,7 @@ public class Game {
         Timer asteroidSpawnerTimer = new Timer(asteroidSpawnFrequency, asteroidSpawnerListener);
         asteroidSpawnerTimer.start();
 
-        AudioPlayer.playBackgroundMusic();
+        //AudioPlayer.playBackgroundMusic();
     }
 
     public void handleCollisions() {
@@ -96,7 +93,7 @@ public class Game {
     }
 
     //region Key listener
-    public static class GameKeyListener extends KeyAdapter { //TODO: prevent playing shooting sound while in game over state; fix double trigger of keys handling
+    public static class GameKeyListener extends KeyAdapter {
         private GameComponent component;
         private Set<Integer> pressedKeys = new HashSet<>();
 
@@ -112,6 +109,7 @@ public class Game {
                 Projectile projectile = component.getGame().getPlayer().shoot();
                 if (projectile != null) {
                     component.getGame().getProjectileList().add(projectile);
+                    //AudioPlayer.playLaserSound();
                 }
             }
 
@@ -145,63 +143,12 @@ public class Game {
             handleKeys();
         }
     }
-    /*public static class GameKeyListener implements KeyListener {
-        private final GameComponent component;
-        private final Set<Integer> pressedKeys = new HashSet<>();
-
-        public GameKeyListener(GameComponent component) {
-            this.component = component;
-        }
-
-        private void handleKeys() {
-            System.out.println("key handle");
-            if(pressedKeys.contains(KeyEvent.VK_SPACE)) {
-                Projectile projectile = component.getGame().getPlayer().shoot();
-                if(projectile != null) {
-                    component.getGame().getProjectileList().add(projectile);
-                }
-            }
-
-            if (pressedKeys.contains(KeyEvent.VK_LEFT)) {
-                component.getGame().getPlayer().move(Entity.Direction.LEFT);
-            }
-
-            if (pressedKeys.contains(KeyEvent.VK_RIGHT)) {
-                component.getGame().getPlayer().move(Entity.Direction.RIGHT);
-            }
-        }
-
-        @Override
-        public synchronized void keyPressed(KeyEvent e) {
-            System.out.println("pressed");
-            int keyCode = e.getKeyCode();
-            if (!pressedKeys.contains(keyCode)) {
-                pressedKeys.add(keyCode);
-                handleKeys();
-            }
-        }
-
-        @Override
-        public synchronized void keyReleased(KeyEvent e) {
-            int keyCode = e.getKeyCode();
-            pressedKeys.remove(keyCode);
-            handleKeys();
-        }
-
-        @Override
-        public synchronized void keyTyped(KeyEvent e) {}
-    }*/
     //endregion
 
     //region Getters & Setters
-
     public int getAnimationSpeed() {
         return animationSpeed;
     }
-
-    /*public Sprite getBackground() {
-        return background;
-    }*/
 
     public Player getPlayer() {
         return player;
@@ -226,6 +173,5 @@ public class Game {
     public ArrayList<Explosion> getExplosionList() {
         return explosionList;
     }
-
     //endregion
 }
