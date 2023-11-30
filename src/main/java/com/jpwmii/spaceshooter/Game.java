@@ -1,6 +1,5 @@
 package com.jpwmii.spaceshooter;
 
-import com.jpwmii.spaceshooter.audio.AudioPlayer;
 import com.jpwmii.spaceshooter.entities.*;
 import com.jpwmii.spaceshooter.graphics.GameComponent;
 import com.jpwmii.spaceshooter.graphics.RelativeBounds;
@@ -16,7 +15,6 @@ import java.util.Set;
 
 public class Game {
     private final int animationSpeed = 50;
-    //private final Sprite background;
     private final Player player;
     private final AsteroidSpawner asteroidSpawner;
     private final int asteroidSpawnFrequency = 1000;
@@ -56,8 +54,6 @@ public class Game {
         };
         Timer asteroidSpawnerTimer = new Timer(asteroidSpawnFrequency, asteroidSpawnerListener);
         asteroidSpawnerTimer.start();
-
-        //AudioPlayer.playBackgroundMusic();
     }
 
     public void handleCollisions() {
@@ -94,8 +90,8 @@ public class Game {
 
     //region Key listener
     public static class GameKeyListener extends KeyAdapter {
-        private GameComponent component;
-        private Set<Integer> pressedKeys = new HashSet<>();
+        private final GameComponent component;
+        private final Set<Integer> pressedKeys = new HashSet<>();
 
         public GameKeyListener(GameComponent component) {
             this.component = component;
@@ -109,7 +105,6 @@ public class Game {
                 Projectile projectile = component.getGame().getPlayer().shoot();
                 if (projectile != null) {
                     component.getGame().getProjectileList().add(projectile);
-                    //AudioPlayer.playLaserSound();
                 }
             }
 
@@ -146,20 +141,8 @@ public class Game {
     //endregion
 
     //region Getters & Setters
-    public int getAnimationSpeed() {
-        return animationSpeed;
-    }
-
     public Player getPlayer() {
         return player;
-    }
-
-    public AsteroidSpawner getAsteroidSpawner() {
-        return asteroidSpawner;
-    }
-
-    public int getAsteroidSpawnFrequency() {
-        return asteroidSpawnFrequency;
     }
 
     public ArrayList<Projectile> getProjectileList() {

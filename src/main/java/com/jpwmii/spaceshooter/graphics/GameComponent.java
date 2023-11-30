@@ -16,12 +16,6 @@ public class GameComponent extends JComponent {
     private Game game;
     private final int animationSpeed = 50;
     private final Sprite background;
-    /*private final Player player;
-    private final AsteroidSpawner asteroidSpawner;
-    private final int asteroidSpawnFrequency = 1000;
-    private final ArrayList<Projectile> projectileList = new ArrayList<>();
-    private final ArrayList<Asteroid> asteroidList = new ArrayList<>();
-    private final ArrayList<Explosion> explosionList = new ArrayList<>();*/
 
     public GameComponent() {
         this.currentProgramState = ProgramState.MENU;
@@ -124,7 +118,7 @@ public class GameComponent extends JComponent {
                 g2d.setColor(Color.WHITE);
 
                 String gameOverText = "GAME OVER";
-                String playerScoreText = "Your Score: " + this.game.getPlayer().getScore();
+                String playerScoreText = "Final Score: " + this.game.getPlayer().getScore();
                 String restartText = "Press ENTER to restart";
 
                 FontMetrics fontMetrics = g2d.getFontMetrics(font);

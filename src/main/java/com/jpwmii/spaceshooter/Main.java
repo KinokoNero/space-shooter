@@ -2,6 +2,6 @@ package com.jpwmii.spaceshooter;
 
 public class Main {
     public static void main(String[] args) {
-        MainForm mainForm = new MainForm(800, 800);
+        MainForm mainForm = new MainForm(1000, 1000);
     }
 }

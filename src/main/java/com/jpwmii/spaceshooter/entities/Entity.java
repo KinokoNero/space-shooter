@@ -5,7 +5,6 @@ import com.jpwmii.spaceshooter.graphics.Sprite;
 
 public abstract class Entity {
     protected RelativeBounds relativeBounds;
-    //protected final double movementStep = 0.01;
     protected Sprite entitySprite;
     public enum Direction {
         LEFT(-1), RIGHT(1), UP(-1), DOWN(1);

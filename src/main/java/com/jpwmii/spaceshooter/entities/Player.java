@@ -56,8 +56,7 @@ public class Player extends Entity {
                             this.relativeBounds.getVerticalPosition(),
                             0.05,
                             0.1
-                    ),
-                    Direction.UP
+                    )
             );
         }
         return null;
